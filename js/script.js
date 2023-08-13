@@ -74,7 +74,7 @@ class App{
         
           try{
             const input = document.querySelector('.input');
-        const val = input.value;
+        const val = input.value.toLowerCase();
         if(this._checkInput(val) === 'IP Address'){
          this.#searchIP = val;
          this.#searchDN = '';
