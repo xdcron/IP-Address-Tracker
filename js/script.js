@@ -88,16 +88,18 @@ class App{
          alert('Please search for a valid domain or ip address')
         };
 
-      const res = await  fetch(`https://geo.ipify.org/api/v2/country?apiKey=${apiKey}&ipAddress=${this.#searchIP}&domain=${this.#searchDN}`);
+      const res = await  fetch(`https://geo.ipify.org/api/v2/country,city?apiKey=${apiKey}&ipAddress=${this.#searchIP}&domain=${this.#searchDN}`);
       if(!res.ok){
         alert('Could not get information, Try again.');
         infoContainer.style.opacity = 0;
       }
       
       const data = await res.json();
+
+      const {lat, lng} = data.location;
+      this._displayMarker([lat, lng]);
       this._displayInfo(data);
-      this.#area = data.location.region;
-      this._coordAndLocation(this.#area);
+      
       infoContainer.style.opacity = 1;
       } catch(err) {
         console.error(err);
@@ -105,31 +107,12 @@ class App{
       input.value = '';
       };
 
-      // Coords
-     async _coordAndLocation(area) {
-        try{
-            // make request in order to get coordinates for marker
-            const res = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${area}&key=${geoApiKey}`);
-            if(!res.ok){
-                alert('Could not get Location')
-            }
-            const data = await res.json();
-            const {lat, lng} = data.results[0].geometry;
-            const markerPlacement = [lat, lng];
-
-            // show marker
-            this._displayMarker(markerPlacement);
-        }catch(err) {
-            err;
-        }
-      };
-
       //Display Infomation
       _displayInfo(data) {
         ipAddress.textContent = data.ip
         timezone.textContent = data.location.timezone
         isp.textContent = data.isp
-        area.textContent = `${data.location.region}, ${data.location.country}`;
+        area.textContent = `${data.location.city}, ${data.location.country}`;
       };
 
       // Display Marker and move map
@@ -150,3 +133,4 @@ class App{
 }
 
 const app = new App();
+
